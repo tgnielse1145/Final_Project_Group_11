@@ -258,7 +258,7 @@ if ~exist(outputFolder, 'dir')
 end
 
 % Combine the folder path and file name
-outputFilename = fullfile(outputFolder, 'combined_output.wav');
+outputFilename = fullfile(outputFolder, 'fs32_output.wav');
 
 %Save the Combined Signal
 audiowrite(outputFilename, new_combined_signal, new_fs);
