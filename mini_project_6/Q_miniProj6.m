@@ -29,7 +29,7 @@ for ii = 1:size(segments, 2)
     end
 
     % Display information for debugging purposes
-    fprintf('%d is note %d, max = %.2f\n', ii, noteNum, maxVal);
+    %fprintf('%d is note %d, max = %.2f\n', ii, noteNum, maxVal);
 end
 
 % Display compact output
@@ -38,21 +38,6 @@ disp(noteNumbers);
 disp('Timestamps (s):');
 disp(timestamps);
 
-% Generate the double tempo audio file using notes and timestamps
-%outputAudio = zeros(round(timestamps(end) * 2 * fs), 1); % Initialize output audio
-% for i = 1:length(noteNumbers)
-%     if noteNumbers(i) ~= -1 % Skip silence
-%         t = (0:1/fs:segmentDuration/2 - 1/fs) + timestamps(i) * 2; % Adjusted time for double tempo
-%         freq = noteNumbers(i); % Use note frequency as the tone
-%         tone = 0.5 * sin(2 * pi * freq * t); % Generate a sine wave
-%         startIdx = round(timestamps(i) * 2 * fs) + 1;
-%         endIdx = startIdx + length(tone) - 1;
-%         outputAudio(startIdx:endIdx) = outputAudio(startIdx:endIdx) + tone'; % Add tone to output
-%     end
-% end
-% 
-% % Normalize the audio to prevent clipping
-% outputAudio = outputAudio / max(abs(outputAudio));
 % Generate the double tempo audio file using notes and timestamps
 maxTime = timestamps(end) * 2 + segmentDuration / 2; % Calculate total time for doubled tempo
 outputAudio = zeros(round(maxTime * fs), 1); % Initialize output audio with sufficient size
@@ -79,7 +64,15 @@ end
 outputAudio = outputAudio / max(abs(outputAudio));
 
 % Save the new audio file
-outputFilename = 'DoubleTempo2.wav';
+outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+
+% Combine the folder path and file name
+outputFilename = fullfile(outputFolder, 'DoubleTempo.wav');
+
+%outputFilename = 'DoubleTempo.wav';
 audiowrite(outputFilename, outputAudio, fs);
 
 % Save notes and timestamps to a text file
@@ -89,14 +82,9 @@ for i = 1:length(noteNumbers)
     fprintf(fileID, 'Note: %d, Timestamp: %.2f s\n', noteNumbers(i), timestamps(i));
 end
 fclose(fileID);
-% MATLAB Script to Use a .wav File as Input to a Synthesizer
-
-
-
-% MATLAB Script to Use a .wav File as Input to a Synthesizer
 
 % Step 1: Read the .wav File
-[wav_signal, wav_fs] = audioread('DoubleTempo2.wav'); % Replace 'AuntRhody_DoubleTempo2_FromNotes.wav' with your actual file name
+[wav_signal, wav_fs] = audioread('DoubleTempo.wav'); % Replace 'AuntRhody_DoubleTempo_FromNotes.wav' with your actual file name
 
 % Step 2: Define Sampling Frequencies
 org_fs=30;
@@ -128,6 +116,21 @@ cosine_signal = cos(2 * pi * f * t); % Generate the cosine wave
 % Combine the Signals
 combined_signal = wav_padded' + cosine_signal; % Ensure wav_padded is a row vector
 
+% Normalize before writing
+combined_signal = combined_signal / max(abs(combined_signal));
+
+outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+
+% Combine the folder path and file name
+outputFilename = fullfile(outputFolder, 'fs80_output.wav');
+
+%outputFilename = 'DoubleTempo.wav';
+audiowrite(outputFilename, combined_signal, fs1);
+
+
 % Save the Combined Signal (Optional)
 %audiowrite(['output_fs', num2str(fs1), '.wav'], combined_signal, fs1); % Save the combined signal to a new .wav file
 
@@ -148,9 +151,21 @@ t2 = -0.5:1/fs2:0.5; % Time vector for the cosine signal
 f = 30; % Frequency of the cosine signal
 cosine_signal2 = cos(2 * pi * f * t2); % Generate the cosine wave
 
+
 % Combine the Signals
 combined_signal2 = wav_padded2' + cosine_signal2; % Ensure wav_padded2 is a row vector
+% Normalize before writing
+combined_signal2 = combined_signal2 / max(abs(combined_signal2));
+outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
 
+% Combine the folder path and file name
+outputFilename = fullfile(outputFolder, 'fs60_output.wav');
+
+%outputFilename = 'DoubleTempo.wav';
+audiowrite(outputFilename, combined_signal2, fs2);
 
 % Save the Combined Signal (Optional)
 %audiowrite(['output_fs', num2str(fs2), '.wav'], combined_signal2, fs2); % Save the combined signal to a new .wav file
@@ -167,104 +182,63 @@ t3 = -0.5:1/fs3:0.5; % Time vector for the cosine signal
     else
         wav_padded3 = wav_resampled3(1:length(t3));
     end
-end
+  end
 % Generate the Cosine Signal
 f = 30; % Frequency of the cosine signal
 cosine_signal3 = cos(2 * pi * f * t3); % Generate the cosine wave
 
+
+
 % Combine the Signals
 combined_signal3 = wav_padded3' + cosine_signal3; % Ensure wav_padded3 is a row vector
+% Normalize before writing
+combined_signal3 = combined_signal3 / max(abs(combined_signal3));
+
+outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+
+% Combine the folder path and file name
+outputFilename = fullfile(outputFolder, 'fs30_output.wav');
+
+%outputFilename = 'DoubleTempo.wav';
+audiowrite(outputFilename, combined_signal3, fs3);
 
 
 % Save the Combined Signal (Optional)
 %audiowrite(['output_fs', num2str(fs3), '.wav'], combined_signal3, fs3); % Save the combined signal to a new .wav file
 
-% figure(1);
-% subplot(3, 1, 1);
-% plot(t, combined_signal,'LineWidth',2);
-% xlabel('Time (s)');
-% ylabel('Amplitude');
-% title(['Combined Signal (fs = ', num2str(fs1), ' Hz)']);
-% set(gca, 'fontname', 'Times New Roman');
-% set(gca,'fontsize',14);
-% set(gca,'fontweight', 'bold');
-% 
-% subplot(3, 1, 2);
-% plot(t2, combined_signal2,'LineWidth',2);
-% xlabel('Time (s)');
-% ylabel('Amplitude');
-% title(['Combined Signal (fs = ', num2str(fs2), ' Hz)']);
-% set(gca, 'fontname', 'Times New Roman');
-% set(gca,'fontsize',14);
-% set(gca,'fontweight', 'bold');
-% 
-% subplot(3, 1, 3);
-% plot(t3, combined_signal3,'LineWidth',2);
-% xlabel('Time (s)');
-% ylabel('Amplitude');
-% title(['Combined Signal (fs = ', num2str(fs3), ' Hz)']);
-% set(gca, 'fontname', 'Times New Roman');
-% set(gca,'fontsize',14);
-% set(gca,'fontweight', 'bold');
-
-% sample_times1 = 0:1/fs1:(length(t)-1)/fs1;%start_time:1/fs1:end_time;
-% sample_times2 = 0:1/fs2:(length(t2)-1)/fs2;%start_time:1/fs2:end_time;
-% sample_times3 = 0:1/fs3:(length(t3)-1)/fs3;%start_time:1/fs3:end_time;
-% c11 = cos(2*pi*org_fs*sample_times1);
-% c22 = cos(2*pi*org_fs*sample_times2);
-% c33 = cos(2*pi*org_fs*sample_times3);
-% 
-% 
-% c1 = c11 + t;
-% c2 = c22 + t2;
-% c3 = c33 + t3;
-
-
-st1 = -0.5:1/fs1:0.5;
-st2 = -0.5:1/fs2:0.5;
-st3 = -0.5:1/fs3:0.5;
-c1=cos(2*pi*fs1*st1);
-c2=cos(2*pi*fs2*st2);
-c3=cos(2*pi*fs3*st3);
 figure(1);
 subplot(3, 1, 1);
 plot(t, combined_signal,'LineWidth',2);
- hold on;
-plot(t, c1,'LineWidth',2);
-hold off; 
 xlabel('Time (s)');
 ylabel('Amplitude');
-title(['Combined Signal (fs = ', num2str(fs1), ' Hz)']);
+title(['fs = ', num2str(fs1), ' Hz']);
 set(gca, 'fontname', 'Times New Roman');
 set(gca,'fontsize',14);
 set(gca,'fontweight', 'bold');
 
 subplot(3, 1, 2);
 plot(t2, combined_signal2,'LineWidth',2);
- hold on;
-plot(t2, c2,'LineWidth',2);
- hold off; 
 xlabel('Time (s)');
 ylabel('Amplitude');
-title(['Combined Signal (fs = ', num2str(fs2), ' Hz)']);
+title(['fs = ', num2str(fs2), ' Hz']);
 set(gca, 'fontname', 'Times New Roman');
 set(gca,'fontsize',14);
 set(gca,'fontweight', 'bold');
 
 subplot(3, 1, 3);
 plot(t3, combined_signal3,'LineWidth',2);
- hold on;
-plot(t3, c3,'LineWidth',2);
-hold off; 
 xlabel('Time (s)');
 ylabel('Amplitude');
-title(['Combined Signal (fs = ', num2str(fs3), ' Hz)']);
+title(['fs = ', num2str(fs3), ' Hz']);
 set(gca, 'fontname', 'Times New Roman');
 set(gca,'fontsize',14);
 set(gca,'fontweight', 'bold');
 
 % Step 1: Read the .wav File
-%[wav_signal, wav_fs] = audioread('DoubleTempo2.wav'); % Replace 'AuntRhody_DoubleTempo2_FromNotes.wav' with your actual file name
+%[wav_signal, wav_fs] = audioread('DoubleTempo.wav'); % Replace 'AuntRhody_DoubleTempo_FromNotes.wav' with your actual file name
 
 % Step 2: Resample the .wav File if Necessary
 new_fs = 32; % Desired sampling frequency (matching the cosine signal)
@@ -286,7 +260,11 @@ new_cosine_signal = cos(2 * pi * f * new_t); % Generate the cosine wave
 
 % Step 5: Combine the Signals
 new_combined_signal = new_wav_padded' + new_cosine_signal; % Ensure new_wav_padded is a row vector
+% Normalize before writing
+new_combined_signal = new_combined_signal / max(abs(new_combined_signal));
 
+% Step 7: Save the Combined Signal (Optional)
+audiowrite('output.wav', new_combined_signal, new_fs); % Save the combined signal to a new .wav file
 
 sample_times4 = 0:1/32:(length(new_t)-1)/32;
 c4 = cos(2*pi*f*sample_times4);
@@ -300,13 +278,12 @@ plot(new_t, c5, 'LineWidth', 2);
 hold off;
 xlabel('Time (s)');
 ylabel('Amplitude');
-title('Combined Signal');
+%title('Combined Signal');
+title(['Combined Signal (fs = ', num2str(new_fs), ' Hz)']);
+legend('Combined Signal (Resampled + Cosine)', 'Modified Cosine Signal (Cosine + Time Vector)', 'Location', 'best');
 set(gca, 'fontname', 'Times New Roman');
 set(gca,'fontsize',14);
 set(gca,'fontweight', 'bold');
-
-% Step 7: Save the Combined Signal (Optional)
-%audiowrite('output.wav', new_combined_signal, new_fs); % Save the combined signal to a new .wav file
 
 % NoteDetect Function Placeholder
 function [noteNum, maxVal] = noteDetect(segment, fs, threshold)
