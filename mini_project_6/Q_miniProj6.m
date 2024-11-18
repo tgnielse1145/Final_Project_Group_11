@@ -1,6 +1,7 @@
 % Part One: Reading and segmenting the audio file
 % Read the audio file
-[audioData, fs] = audioread('AuntRhody.wav');
+[audioData, fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/AuntRhody.wav');
+
 
 % Define segment duration in seconds and calculate the segment length in samples
 segmentDuration = 0.05; % 50 ms (can be adjusted between 0.05 to 0.1 seconds)
@@ -89,7 +90,7 @@ end
 fclose(fileID);
 
 % Step 1: Read the .wav File
-[wav_signal, wav_fs] = audioread('DoubleTempo.wav'); % Replace 'AuntRhody_DoubleTempo_FromNotes.wav' with your actual file name
+[wav_signal, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DoubleTempo.wav');
 
 % Step 2: Define Sampling Frequencies
 org_fs=30;
@@ -268,8 +269,19 @@ new_combined_signal = new_wav_padded' + new_cosine_signal; % Ensure new_wav_padd
 % Normalize before writing
 new_combined_signal = new_combined_signal / max(abs(new_combined_signal));
 
+outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+
+% Combine the folder path and file name
+outputFilename = fullfile(outputFolder, 'combined_output.wav');
+
+%outputFilename = 'DoubleTempo.wav';
+audiowrite(outputFilename, new_combined_signal, new_fs);
+
 % Step 7: Save the Combined Signal (Optional)
-audiowrite('output.wav', new_combined_signal, new_fs); % Save the combined signal to a new .wav file
+%audiowrite('output.wav', new_combined_signal, new_fs); % Save the combined signal to a new .wav file
 
 sample_times4 = 0:1/32:(length(new_t)-1)/32;
 c4 = cos(2*pi*f*sample_times4);
