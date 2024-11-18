@@ -75,8 +75,13 @@ outputFilename = fullfile(outputFolder, 'DoubleTempo.wav');
 %outputFilename = 'DoubleTempo.wav';
 audiowrite(outputFilename, outputAudio, fs);
 
+outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/data/';
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+notesFile = fullfile(outputFolder, 'Timestamps_Notes.txt');
 % Save notes and timestamps to a text file
-notesFile = 'Notes_Timestamps.txt';
+%notesFile = 'Notes_Timestamps.txt';
 fileID = fopen(notesFile, 'w');
 for i = 1:length(noteNumbers)
     fprintf(fileID, 'Note: %d, Timestamp: %.2f s\n', noteNumbers(i), timestamps(i));
