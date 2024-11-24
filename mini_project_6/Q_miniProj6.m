@@ -1,69 +1,64 @@
-% Part One: Reading and segmenting the audio file
 % Read the audio file
+%[audioData, fs] = audioread('AuntRhody.wav');
 [audioData, fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/AuntRhody.wav');
 
+% Read the audio file
+%[audioData, fs] = audioread('AuntRhody.wav');
 
-% Define segment duration in seconds and calculate the segment length in samples
-segmentDuration = 0.05; % 50 ms (can be adjusted between 0.05 to 0.1 seconds)
-segmentLength = round(segmentDuration * fs);
+% Set the segment duration (in milliseconds) and calculate samples per segment
+segmentDurationMs = 100;  % Duration of each segment in milliseconds
+samplesPerSegment = round((segmentDurationMs / 1000) * fs);
 
-% Reshape the audio into segments (ensure the total length is divisible by segment length)
-totalSamples = floor(length(audioData) / segmentLength) * segmentLength;
-audioData = audioData(1:totalSamples); % Truncate to make it divisible
-segments = reshape(audioData, segmentLength, []);
+% Reshape the audio data into segments
+numSegments = floor(length(audioData) / samplesPerSegment);
+reshapedAudio = reshape(audioData(1:numSegments * samplesPerSegment), samplesPerSegment, numSegments);
 
-% Define silence threshold
-threshold = 0.01; % Adjust as needed for your data
+% Placeholder threshold for note detection
+threshold = 0.1;  % Adjust this value based on the signal amplitude
 
-% Initialize output variables
-noteNumbers = [];
-timestamps = [];
+% Initialize arrays to store detected notes and times
+notes = [];
+times = [];
 
-% Loop through segments to detect notes
-for ii = 1:size(segments, 2)
-    segment = segments(:, ii);
-    [noteNum, maxVal] = noteDetect(segment, fs, threshold);
-
-    if noteNum ~= -1 % Exclude silence
-        noteNumbers = [noteNumbers, noteNum];
-        timestamps = [timestamps, (ii-1) * segmentDuration];
+% Loop through each segment
+for ii = 1:numSegments
+    currentSegment = reshapedAudio(:, ii);
+    [noteNum, maxVal] = noteDetect(currentSegment, fs, threshold);
+    
+    if noteNum ~= -1  % Ignore silence
+        % Append note number and corresponding time
+        notes = [notes, noteNum];
+        times = [times, (ii - 1) * (segmentDurationMs / 1000)]; % Time in seconds
     end
+            fprintf('Segment %d: Note = %d, Max Power = %.2f\n', ii, noteNum, maxVal);
 
-    % Display information for debugging purposes
-    fprintf('%d is note %d, max = %.2f\n', ii, noteNum, maxVal);
 end
 
-% Display compact output
-fprintf('Notes:\n');
-disp(noteNumbers);
-disp('Timestamps (s):');
-disp(timestamps);
+% Display the detected notes and times
+disp('Detected Notes and Timestamps:');
+disp('Notes:');
+disp(notes);
+disp('Times (in seconds):');
+disp(times);
 
-% Generate the double tempo audio file using notes and timestamps
-maxTime = timestamps(end) * 2 + segmentDuration / 2; % Calculate total time for doubled tempo
-outputAudio = zeros(round(maxTime * fs), 1); % Initialize output audio with sufficient size
-
-for i = 1:length(noteNumbers)
-    if noteNumbers(i) ~= -1 % Skip silence
-        t = 0:1/fs:segmentDuration/2 - 1/fs; % Time vector for half segment duration
-        freq = noteNumbers(i); % Use note frequency as the tone
-        tone = 0.5 * sin(2 * pi * freq * t); % Generate a sine wave
-        startIdx = round(timestamps(i) * 2 * fs) + 1;
-        endIdx = startIdx + length(tone) - 1;
-        
-        % Ensure indices are within bounds of outputAudio
-        if endIdx > length(outputAudio)
-            endIdx = length(outputAudio);
-            tone = tone(1:(endIdx - startIdx + 1)); % Truncate tone if needed
-        end
-        
-        outputAudio(startIdx:endIdx) = outputAudio(startIdx:endIdx) + tone'; % Add tone to output
-    end
+% Generate the synthesized audio signal
+outputSignal = [];
+for i = 1:length(notes)
+    % Generate a sine wave for the detected note
+    midiNote = notes(i);
+    frequency = 440 * 2^((midiNote - 69) / 12);  % MIDI note to frequency
+    duration = segmentDurationMs / 1000;  % Duration in seconds
+    t = 0:1/fs:duration - 1/fs;  % Time vector
+    
+    % Generate the sine wave
+    sineWave = 0.5 * sin(2 * pi * frequency * t);  % Amplitude scaled to 0.5
+    
+    % Append the sine wave to the output signal
+    outputSignal = [outputSignal, sineWave];
 end
 
-% Normalize the audio to prevent clipping
-outputAudio = outputAudio / max(abs(outputAudio));
-
+% Normalize the output signal to prevent clipping
+outputSignal = outputSignal / max(abs(outputSignal));
 % Save the new audio file
 outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
 if ~exist(outputFolder, 'dir')
@@ -71,230 +66,322 @@ if ~exist(outputFolder, 'dir')
 end
 
 % Combine the folder path and file name
-outputFilename = fullfile(outputFolder, 'DoubleTempo.wav');
+outputFilename = fullfile(outputFolder, 'DetectedNotes.wav');
+audiowrite(outputFilename, outputSignal, fs);
 
-audiowrite(outputFilename, outputAudio, fs);
+%disp(['Synthesized audio file saved as: ', outputFilename]);
 
-outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/data/';
-if ~exist(outputFolder, 'dir')
-    mkdir(outputFolder);
-end
-% Save notes and timestamps to a text file
-notesFile = fullfile(outputFolder, 'Timestamps_Notes.txt');
-fileID = fopen(notesFile, 'w');
+% Read the newly created .wav file
+%[newAudioData, newFs] = audioread(outputFileName);
+[newAudioData, newFs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes.wav');
 
-for i = 1:length(noteNumbers)
-    fprintf(fileID, 'Note: %d, Timestamp: %.2f s\n', noteNumbers(i), timestamps(i));
-end
-fclose(fileID);
 
-% Read the .wav File
-[wav_signal, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DoubleTempo.wav');
+% Double the tempo by halving the duration (speed up playback)
+doubledTempoData = newAudioData(1:2:end);  % Keep every second sample
 
-% Define Sampling Frequencies
-org_fs=30;
-fs1 = 80; % Sampling frequency 1
-fs2 = 60; % Sampling frequency 2
-fs3 = 30; % Sampling frequency 3
-
-% Resample the .wav File
-wav_resampled = resample(wav_signal, fs1, wav_fs);
-
-% Define the Time Vector and Trim/Pad the Signal
-t = -0.5:1/fs1:0.5; % Time vector for the cosine signal
- % Trim or pad the signal to match the length of the time vector
- for i = 1:length(fs1)
-    if length(wav_resampled) < length(t)
-        wav_padded = [wav_resampled; zeros(length(t) - length(wav_resampled), 1)];
-    else
-        wav_padded = wav_resampled(1:length(t));
-    end
-end
-
-% Generate the Cosine Signal
-f = 30; % Frequency of the cosine signal
-cosine_signal = cos(2 * pi * f * t); % Generate the cosine wave
-
-% Combine the Signals
-combined_signal = wav_padded' + cosine_signal; % Ensure wav_padded is a row vector
-
-% Normalize before writing
-combined_signal = combined_signal / max(abs(combined_signal));
-
+% Save the new audio file
 outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
 if ~exist(outputFolder, 'dir')
     mkdir(outputFolder);
 end
 
-% Combine the folder path and file name
-outputFilename = fullfile(outputFolder, 'fs80_output.wav');
+% Save the tempo-adjusted audio file
+tempoAdjustedFileName = fullfile(outputFolder,'DetectedNotes_DoubleTempo.wav');
+%tempoAdjustedFileName = 'DetectedNotes_DoubleTempo.wav';
+audiowrite(tempoAdjustedFileName, doubledTempoData, fs);
 
-% Save the Combined Signal
-audiowrite(outputFilename, combined_signal, fs1);
+%disp(['Tempo-adjusted audio file saved as: ', tempoAdjustedFileName]);
 
-% Resample the .wav File
-wav_resampled2 = resample(wav_signal, fs2, wav_fs);
 
-% Define the Time Vector and Trim/Pad the Signal
-t2 = -0.5:1/fs2:0.5; % Time vector for the cosine signal
 
- % Trim or pad the signal to match the length of the time vector
-  for i = 1:length(fs2)
-    if length(wav_resampled2) < length(t2)
-        wav_padded2 = [wav_resampled2; zeros(length(t2) - length(wav_resampled2), 1)];
-    else
-        wav_padded2 = wav_resampled2(1:length(t2));
-    end
-  end
 
-% Generate the Cosine Signal
-f = 30; % Frequency of the cosine signal
-cosine_signal2 = cos(2 * pi * f * t2); % Generate the cosine wave
 
-% Combine the Signals
-combined_signal2 = wav_padded2' + cosine_signal2; % Ensure wav_padded2 is a row vector
-% Normalize before writing
-combined_signal2 = combined_signal2 / max(abs(combined_signal2));
-outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
 
-if ~exist(outputFolder, 'dir')
-    mkdir(outputFolder);
-end
 
-% Combine the folder path and file name
-outputFilename = fullfile(outputFolder, 'fs60_output.wav');
 
-% Save the Combined Signal (Optional)
-audiowrite(outputFilename, combined_signal2, fs2);
+% Load the 'DetectedNotes_DoubleTempo.wav' file
+%[inputAudio, fs] = audioread('DetectedNotes_DoubleTempo.wav');
+[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes_DoubleTempo.wav');
 
-% Resample the .wav File
-wav_resampled3 = resample(wav_signal, fs3, wav_fs);
+%disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
 
-% Define the Time Vector and Trim/Pad the Signal
-t3 = -0.5:1/fs3:0.5; % Time vector for the cosine signal
- % Trim or pad the signal to match the length of the time vector
-  for i = 1:length(fs3)
-    if length(wav_resampled3) < length(t3)
-        wav_padded3 = [wav_resampled3; zeros(length(t3) - length(wav_resampled3), 1)];
-    else
-        wav_padded3 = wav_resampled3(1:length(t3));
-    end
-  end
 
-% Generate the Cosine Signal
-f = 30; % Frequency of the cosine signal
-cosine_signal3 = cos(2 * pi * f * t3); % Generate the cosine wave
 
-% Combine the Signals
-combined_signal3 = wav_padded3' + cosine_signal3; % Ensure wav_padded3 is a row vector
-% Normalize before writing
-combined_signal3 = combined_signal3 / max(abs(combined_signal3));
+% Define cosine signal parameters
+f = 30;  % Frequency of the cosine wave (Hz)
+t = -0.5:1/wav_fs:0.5;  % Time vector for the continuous signal
+cosSignal = cos(2 * pi * f * t);  % Continuous cosine signal
 
-outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
-if ~exist(outputFolder, 'dir')
-    mkdir(outputFolder);
-end
+% Sampling frequencies
+fs1 = 80;  % Sampling frequency 1
+fs2 = 60;  % Sampling frequency 2
+fs3 = 30;  % Sampling frequency 3
 
-% Combine the folder path and file name
-outputFilename = fullfile(outputFolder, 'fs30_output.wav');
+% Sample the signal at each sampling frequency
+t_fs1 = -0.5:1/fs1:0.5;
+cos_fs1 = cos(2 * pi * f * t_fs1);
 
-% Save the Combined Signal
-audiowrite(outputFilename, combined_signal3, fs3);
+t_fs2 = -0.5:1/fs2:0.5;
+cos_fs2 = cos(2 * pi * f * t_fs2);
 
+t_fs3 = -0.5:1/fs3:0.5;
+cos_fs3 = cos(2 * pi * f * t_fs3);
+
+% Plot the signals
 figure(1);
-subplot(3, 1, 1);
-plot(t, combined_signal,'LineWidth',2);
+
+% Original cosine signal
+subplot(4, 1, 1);
+plot(t, cosSignal, 'b', 'LineWidth',2);
+title('Original Cosine Signal (Continuous, 30 Hz)');
 xlabel('Time (s)');
 ylabel('Amplitude');
-title(['fs = ', num2str(fs1), ' Hz']);
-set(gca, 'fontname', 'Times New Roman');
-set(gca,'fontsize',14);
-set(gca,'fontweight', 'bold');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
 
-subplot(3, 1, 2);
-plot(t2, combined_signal2,'LineWidth',2);
+% Sampled signal at fs1
+subplot(4, 1, 2);
+stem(t_fs1, cos_fs1, 'r', 'LineWidth', 2);
+title('Sampled Cosine Signal at 80 Hz');
 xlabel('Time (s)');
 ylabel('Amplitude');
-title(['fs = ', num2str(fs2), ' Hz']);
-set(gca, 'fontname', 'Times New Roman');
-set(gca,'fontsize',14);
-set(gca,'fontweight', 'bold');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
 
-subplot(3, 1, 3);
-plot(t3, combined_signal3,'LineWidth',2);
+% Sampled signal at fs2
+subplot(4, 1, 3);
+stem(t_fs2, cos_fs2, 'g', 'LineWidth', 2);
+title('Sampled Cosine Signal at 60 Hz');
 xlabel('Time (s)');
 ylabel('Amplitude');
-title(['fs = ', num2str(fs3), ' Hz']);
-set(gca, 'fontname', 'Times New Roman');
-set(gca,'fontsize',14);
-set(gca,'fontweight', 'bold');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
 
-% Step 2: Resample the .wav File if Necessary
-new_fs = 32; % Desired sampling frequency (matching the cosine signal)
-new_wav_resampled = resample(wav_signal, new_fs, wav_fs);
+% Sampled signal at fs3
+subplot(4, 1, 4);
+stem(t_fs3, cos_fs3, 'k', 'LineWidth', 2);
+title('Sampled Cosine Signal at 30 Hz');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
 
-% Step 3: Define the Time Vector and Trim/Pad the Signal
-new_t = -0.5:1/new_fs:0.5; % Time vector for the cosine signal
+% Display complete figure layout
+sgtitle('Cosine Signal Sampling at Different Frequencies');
 
-% Trim or pad the signal to match the length of the time vector
-if length(new_wav_resampled) < length(new_t)
-    new_wav_padded = [new_wav_resampled; zeros(length(new_t) - length(new_wav_resampled), 1)];
-else
-    new_wav_padded = new_wav_resampled(1:length(new_t));
-end
-
-% Step 4: Generate the Cosine Signal
-f = 30; % Frequency of the cosine signal
-new_cosine_signal = cos(2 * pi * f * new_t); % Generate the cosine wave
-
-% Step 5: Combine the Signals
-new_combined_signal = new_wav_padded' + new_cosine_signal; % Ensure new_wav_padded is a row vector
-% Normalize before writing
-new_combined_signal = new_combined_signal / max(abs(new_combined_signal));
-
-outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
-if ~exist(outputFolder, 'dir')
-    mkdir(outputFolder);
-end
-
-% Combine the folder path and file name
-outputFilename = fullfile(outputFolder, 'fs32_output.wav');
-
-%Save the Combined Signal
-audiowrite(outputFilename, new_combined_signal, new_fs);
-
-sample_times4 = 0:1/32:(length(new_t)-1)/32;
-c4 = cos(2*pi*f*sample_times4);
-c5 = c4 + new_t;
-
-% Plot the Combined Signal
+% Plot the signals
 figure(2);
-plot(new_t, new_combined_signal, 'LineWidth', 2);
-hold on;
-plot(new_t, c5, 'LineWidth', 2);
-hold off;
+
+% Original cosine signal
+subplot(4, 1, 1);
+plot(t, cosSignal, 'b', 'LineWidth', 2);  % Blue for the original signal
+title('Original Cosine Signal (Continuous, 30 Hz)');
 xlabel('Time (s)');
 ylabel('Amplitude');
-title(['Combined Signal (fs = ', num2str(new_fs), ' Hz)']);
-legend('Combined Signal (Resampled + Cosine)', 'Modified Cosine Signal (Cosine + Time Vector)', 'Location', 'best');
-set(gca, 'fontname', 'Times New Roman');
-set(gca,'fontsize',14);
-set(gca,'fontweight', 'bold');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
 
-% NoteDetect Function 
+% Sampled signal at fs1
+subplot(4, 1, 2);
+plot(t_fs1, cos_fs1, 'r', 'LineWidth', 2);  % Red for fs1
+title('Sampled Cosine Signal at 80 Hz');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+
+% Sampled signal at fs2
+subplot(4, 1, 3);
+plot(t_fs2, cos_fs2, 'g', 'LineWidth', 2);  % Green for fs2
+title('Sampled Cosine Signal at 60 Hz');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+
+% Sampled signal at fs3
+subplot(4, 1, 4);
+plot(t_fs3, cos_fs3, 'm', 'LineWidth', 2);  % Magenta for fs3
+title('Sampled Cosine Signal at 30 Hz');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+
+% Display complete figure layout
+sgtitle('Cosine Signal Sampling at Different Frequencies');
+
+
+[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes_DoubleTempo.wav');
+
+%disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
+
+% Define cosine signal parameters
+f = 30;  % Frequency of the cosine wave (Hz)
+t = -0.5:1/wav_fs:0.5;  % Time vector for the continuous signal
+cosSignal = cos(2 * pi * f * t);  % Continuous cosine signal
+
+% Sampling frequencies
+fs1 = 80;  % Sampling frequency 1
+fs2 = 60;  % Sampling frequency 2
+fs3 = 30;  % Sampling frequency 3
+
+% Sample the signal at each sampling frequency
+t_fs1 = -0.5:1/fs1:0.5;
+cos_fs1 = cos(2 * pi * f * t_fs1);
+
+t_fs2 = -0.5:1/fs2:0.5;
+cos_fs2 = cos(2 * pi * f * t_fs2);
+
+t_fs3 = -0.5:1/fs3:0.5;
+cos_fs3 = cos(2 * pi * f * t_fs3);
+
+% Plot the signals
+figure(3);
+
+% Original cosine signal
+subplot(4, 1, 1);
+plot(t, cosSignal, 'b', 'LineWidth', 2);
+title('Original Cosine Signal (Continuous, 30 Hz)');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+
+% Sampled signal at fs1
+subplot(4, 1, 2);
+plot(t_fs1, cos_fs1, 'r-o', 'LineWidth', 2);  % Use plot with markers
+title('Sampled Cosine Signal at 80 Hz');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+
+% Sampled signal at fs2
+subplot(4, 1, 3);
+plot(t_fs2, cos_fs2, 'g-s', 'LineWidth', 2);  % Use plot with square markers
+title('Sampled Cosine Signal at 60 Hz');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+
+% Sampled signal at fs3
+subplot(4, 1, 4);
+plot(t_fs3, cos_fs3, 'k-d', 'LineWidth', 2);  % Use plot with diamond markers
+title('Sampled Cosine Signal at 30 Hz');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+
+% Display complete figure layout
+sgtitle('Cosine Signal Sampling at Different Frequencies');
+
+
+
+% Load the input audio file
+[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes_DoubleTempo.wav');
+%disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
+
+% Extract the x component of the input audio
+if size(inputAudio, 2) > 1
+    x = inputAudio(:, 1);  % Take the first channel if stereo
+else
+    x = inputAudio;  % Use the mono signal directly
+end
+
+% Define cosine signal parameters
+f = 30;  % Frequency of the cosine wave (Hz)
+fs = 32;  % Sampling frequency for the cosine signal
+t = -0.5:1/fs:0.5;  % Time vector for the cosine signal
+
+c = cos(2 * pi * f * t);  % Cosine signal
+%c = cos(2 * pi * f * new_t);  % Cosine signal
+
+% Match the length of x to the length of the cosine signal
+x_resampled = resample(x, length(c), length(x));  % Resample x to match c's length
+
+% Combine the cosine signal with the x component
+x_c = x_resampled + c';  % Combine signals (transpose c to match dimensions)
+
+% Plot the signals
+figure(4);
+plot(t, x_resampled, 'r', 'LineWidth', 2);  % Plot x component in red
+hold on;
+plot(t, x_c, 'b', 'LineWidth', 2);  % Plot x + c component in blue
+title('Comparison of $x$ and $x_c = x + c$', 'Interpreter', 'latex');
+xlabel('Time (s)');
+ylabel('Amplitude');
+legend('x (Audio Component)', 'x_c = x + c (Combined Signal)', 'Location', 'best');
+grid on;
+set(gca, 'fontname', 'Times New Roman');  % Set font name
+set(gca, 'fontsize', 14);                % Set font size
+set(gca, 'fontweight', 'bold');          % Set font weight
+hold off;
+
+
+
+
+
+
 function [noteNum, maxVal] = noteDetect(segment, fs, threshold)
-    % Perform FFT
-    N = length(segment);
-    Y = abs(fft(segment));
-    Y = Y(1:floor(N/2)); % Take positive frequencies only
-    freqs = (0:floor(N/2)-1) * (fs / N);
+    % noteDetect: Identifies the dominant note in a given audio segment.
+    %
+    % Inputs:
+    % - segment: Audio segment (vector of samples).
+    % - fs: Sampling frequency of the audio (Hz).
+    % - threshold: Silence threshold for the power of the loudest note.
+    %
+    % Outputs:
+    % - noteNum: Detected note number (based on MIDI note numbers). Returns -1 for silence.
+    % - maxVal: Maximum magnitude of the dominant frequency in the segment. Returns 0 for silence.
 
-    % Find the peak frequency
-    [maxVal, idx] = max(Y);
-    if maxVal > threshold
-        noteNum = round(freqs(idx)); % Simplified note number mapping
-    else
-        noteNum = -1; % Silence
-        maxVal = 0;
+    % Compute the FFT of the segment
+    N = length(segment);  % Number of samples in the segment
+    fftResult = fft(segment);
+    mag = abs(fftResult(1:floor(N/2)));  % Take positive frequencies
+    freqs = (0:(N/2)-1) * (fs / N);  % Frequency axis
+    
+    % Find the dominant frequency
+    [maxVal, idx] = max(mag);  % Maximum magnitude and its index
+    
+    % Check if the dominant frequency's power is below the silence threshold
+    if maxVal < threshold
+        % Return silence if the maximum amplitude is below the threshold
+        noteNum = -1;  % Indicate silence with -1
+        maxVal = 0;    % No dominant frequency
+        return;
     end
+    
+    % Calculate the dominant frequency
+    dominantFreq = freqs(idx);
+    
+    % Map the frequency to a musical note using the MIDI note scale
+    % MIDI note 69 corresponds to A4 (440 Hz)
+    noteNum = round(69 + 12 * log2(dominantFreq / 440));
 end
