@@ -19,6 +19,7 @@ threshold = 0.1;  % Adjust this value based on the signal amplitude
 % Initialize arrays to store detected notes and times
 notes = [];
 times = [];
+noteNames = [];  % To store the musical note names
 
 % Loop through each segment
 for ii = 1:numSegments
@@ -29,17 +30,27 @@ for ii = 1:numSegments
         % Append note number and corresponding time
         notes = [notes, noteNum];
         times = [times, (ii - 1) * (segmentDurationMs / 1000)]; % Time in seconds
+        noteName = midiToNoteName(noteNum);  % Convert MIDI note to name
+      %  noteNames = [noteNames; {noteName}]; % Append note name to cell array
+         noteNames = [noteNames; {sprintf('%d-%s', noteNum, noteName)}];  % Combine MIDI note and na
     end
-            fprintf('Segment %d: Note = %d, Max Power = %.2f\n', ii, noteNum, maxVal);
+           % fprintf('Segment %d: Note = %d, Max Power = %.2f\n', ii, noteNum, maxVal);
 
 end
+
+% Create a table for output
+noteTable = table(times(:), noteNames(:), ...
+    'VariableNames', {'Time (s)', 'Note (MIDI-Name)'});
 
 % Display the detected notes and times
 disp('Detected Notes and Timestamps:');
 disp('Notes:');
 disp(notes);
-disp('Times (in seconds):');
-disp(times);
+disp('Note Names:');
+disp(noteTable);
+%disp(noteNames);
+%disp('Times (in seconds):');
+%disp(times);
 
 % Generate the synthesized audio signal
 outputSignal = [];
@@ -384,4 +395,12 @@ function [noteNum, maxVal] = noteDetect(segment, fs, threshold)
     % Map the frequency to a musical note using the MIDI note scale
     % MIDI note 69 corresponds to A4 (440 Hz)
     noteNum = round(69 + 12 * log2(dominantFreq / 440));
+end
+% Function to map MIDI note numbers to note names
+function noteName = midiToNoteName(midiNote)
+    % MIDI note names
+    noteNames = {'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'};
+    octave = floor(midiNote / 12) - 1;  % Calculate octave (C4 starts at 60)
+    noteIndex = mod(midiNote, 12) + 1; % Get the note index (1-based)
+    noteName = sprintf('%s%d', noteNames{noteIndex}, octave); % Combine note and octave
 end
