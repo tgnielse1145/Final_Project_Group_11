@@ -1,0 +1,483 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>2 Lab Exercise</title>
+<meta name="generator" content="MATLAB 24.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2024-11-23">
+<meta name="DC.source" content="Lab_Exercise.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>2 Lab Exercise</h1>
+<!--introduction-->
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">2.1 IIR Allpass Filter</a>
+</li>
+<li>
+<a href="#2">2.2 IIR Notch Filters</a>
+</li>
+<li>
+<a href="#3">2.4 Notch Filter Removes Sinusoidal Interference</a>
+</li>
+</ul>
+</div>
+<h2 id="1">2.1 IIR Allpass Filter</h2>
+<p>Parameters for IIR Allpass Filter</p>
+<pre class="codeinput">r = 0.9;
+theta = pi/3; <span class="comment">% Angle in radians</span>
+
+<span class="comment">% Calculate poles and zeros</span>
+zero1 = (1/r) * exp(1j * theta); <span class="comment">% Zero location (conjugate pair)</span>
+zero2 = (1/r) * exp(-1j * theta); <span class="comment">% Zero location</span>
+pole1 = r * exp(1j * theta); <span class="comment">% Pole location (conjugate pair)</span>
+pole2 = r * exp(-1j * theta); <span class="comment">% Pole location</span>
+
+<span class="comment">% Numerator and denominator coefficients</span>
+numerator = poly([zero1, zero2]);
+denominator = poly([pole1, pole2]);
+
+<span class="comment">% Gain adjustment to ensure |H(e^jw)| = 10</span>
+G = 10;
+
+<span class="comment">% Frequency response of the filter</span>
+[H, w] = freqz(G * numerator, denominator, 1024, <span class="string">'whole'</span>);
+
+<span class="comment">% Plot frequency response</span>
+figure(1);
+plot(w/(2*pi), abs(H), <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+title(<span class="string">'Frequency Response of IIR Allpass Filter'</span>);
+xlabel(<span class="string">'Normalized Frequency (\times 2\pi)'</span>);
+ylabel(<span class="string">'|H(e^{j\omega})|'</span>);
+
+<span class="comment">% Plot pole-zero diagram</span>
+figure(2);
+zplane(numerator, denominator);
+title(<span class="string">'Pole-Zero Plot of IIR Allpass Filter'</span>);
+
+<span class="comment">% Display the filter coefficients</span>
+disp(<span class="string">'Numerator coefficients:'</span>);
+disp(numerator);
+disp(<span class="string">'Denominator coefficients:'</span>);
+disp(denominator);
+</pre>
+<pre class="codeoutput">Numerator coefficients:
+    1.0000   -1.1111    1.2346
+
+Denominator coefficients:
+    1.0000   -0.9000    0.8100
+
+</pre>
+<img vspace="5" hspace="5" src="Lab_Exercise_01.png" alt=""> <img vspace="5" hspace="5" src="Lab_Exercise_02.png" alt=""> <h2 id="2">2.2 IIR Notch Filters</h2>
+<pre class="codeinput">
+<span class="comment">% Parameters for IIR Notch Filter</span>
+fs = 1000;
+fint = 60;
+r = 0.95;
+theta = 2 * pi * fint / fs; <span class="comment">% Angle corresponding to interference frequency</span>
+
+<span class="comment">% Calculate poles and zeros</span>
+zero1 = exp(1j * theta); <span class="comment">% Zero location (complex conjugate pair)</span>
+zero2 = exp(-1j * theta); <span class="comment">% Zero location</span>
+pole1 = r * exp(1j * theta); <span class="comment">% Pole location (complex conjugate pair)</span>
+pole2 = r * exp(-1j * theta); <span class="comment">% Pole location</span>
+
+<span class="comment">% Numerator and denominator coefficients</span>
+numerator = poly([zero1, zero2]);
+denominator = poly([pole1, pole2]);
+
+<span class="comment">% Frequency response of the notch filter</span>
+[H, w] = freqz(numerator, denominator, 1024, fs);
+
+<span class="comment">% Plot frequency response</span>
+figure(3);
+plot(w, abs(H), <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+title(<span class="string">'Frequency Response of IIR Notch Filter'</span>);
+xlabel(<span class="string">'Frequency (Hz)'</span>);
+ylabel(<span class="string">'|H(f)|'</span>);
+xlim([0, fs/2]);
+
+<span class="comment">% Plot pole-zero diagram</span>
+figure(4);
+zplane(numerator, denominator);
+title(<span class="string">'Pole-Zero Plot of IIR Notch Filter'</span>);
+
+<span class="comment">% Apply the filter to a test signal</span>
+t = 0:1/fs:1; <span class="comment">% Time vector</span>
+clean_signal = sin(2 * pi * 5 * t); <span class="comment">% 5 Hz sine wave</span>
+interference = sin(2 * pi * fint * t); <span class="comment">% 60 Hz interference</span>
+signal_with_interference = clean_signal + interference;
+
+<span class="comment">% Filter the signal</span>
+filtered_signal = filter(numerator, denominator, signal_with_interference);
+
+<span class="comment">% Plot time-domain signals</span>
+figure(5);
+subplot(2, 1, 1);
+plot(t, signal_with_interference);
+title(<span class="string">'Signal with Interference'</span>);
+xlabel(<span class="string">'Time (s)'</span>);
+ylabel(<span class="string">'Amplitude'</span>);
+grid <span class="string">on</span>;
+
+subplot(2, 1, 2);
+plot(t, filtered_signal);
+title(<span class="string">'Filtered Signal (Interference Removed)'</span>);
+xlabel(<span class="string">'Time (s)'</span>);
+ylabel(<span class="string">'Amplitude'</span>);
+grid <span class="string">on</span>;
+
+<span class="comment">% Display the filter coefficients</span>
+disp(<span class="string">'Numerator coefficients:'</span>);
+disp(numerator);
+disp(<span class="string">'Denominator coefficients:'</span>);
+disp(denominator);
+</pre>
+<pre class="codeoutput">Numerator coefficients:
+    1.0000   -1.8596    1.0000
+
+Denominator coefficients:
+    1.0000   -1.7666    0.9025
+
+</pre>
+<img vspace="5" hspace="5" src="Lab_Exercise_03.png" alt=""> <img vspace="5" hspace="5" src="Lab_Exercise_04.png" alt=""> <img vspace="5" hspace="5" src="Lab_Exercise_05.png" alt=""> <h2 id="3">2.4 Notch Filter Removes Sinusoidal Interference</h2>
+<p>Step (a): Generate ECG Signal with Interference</p>
+<pre class="codeinput">IDstring = <span class="string">'u1499462'</span>;
+dur = 15;
+[ecgsig, fs, fint] = ECGmake(IDstring, dur);
+
+<span class="comment">% Plot the original signal with interference</span>
+figure(6);
+plot((0:length(ecgsig)-1)/fs, ecgsig);
+title(<span class="string">'ECG Signal with Interference'</span>);
+xlabel(<span class="string">'Time (s)'</span>);
+ylabel(<span class="string">'Amplitude'</span>);
+
+<span class="comment">% Step (b): Design the IIR Notch Filter</span>
+r = 0.95; <span class="comment">% Pole radius</span>
+theta = 2 * pi * fint / fs; <span class="comment">% Angle of the pole and zero</span>
+poles = r * [exp(1j*theta); exp(-1j*theta)]; <span class="comment">% Poles as column vector</span>
+zeros = [exp(1j*theta); exp(-1j*theta)]; <span class="comment">% Zeros as column vector</span>
+
+<span class="comment">% Convert poles and zeros to filter coefficients</span>
+[num, den] = zp2tf(zeros, poles, 1);
+
+<span class="comment">% Step (c): Frequency Response of Notch Filter</span>
+[H, f] = freqz(num, den, 1024, fs); <span class="comment">% Frequency response</span>
+figure(7);
+plot(f, abs(H));
+title(<span class="string">'Frequency Response of the Notch Filter'</span>);
+xlabel(<span class="string">'Frequency (Hz)'</span>);
+ylabel(<span class="string">'Magnitude'</span>);
+
+<span class="comment">% Step (d): Filter Coefficients</span>
+disp(<span class="string">'Numerator Coefficients (b):'</span>);
+disp(num);
+disp(<span class="string">'Denominator Coefficients (a):'</span>);
+disp(den);
+
+<span class="comment">% Step (e): Apply Notch Filter to ECG Signal</span>
+filtered_ecg = filter(num, den, ecgsig);
+
+<span class="comment">% Plot original and filtered signals</span>
+figure(8);
+subplot(2, 1, 1);
+plot((0:length(ecgsig)-1)/fs, ecgsig);
+title(<span class="string">'Original ECG Signal'</span>);
+xlabel(<span class="string">'Time (s)'</span>);
+ylabel(<span class="string">'Amplitude'</span>);
+
+subplot(2, 1, 2);
+plot((0:length(filtered_ecg)-1)/fs, filtered_ecg);
+title(<span class="string">'Filtered ECG Signal'</span>);
+xlabel(<span class="string">'Time (s)'</span>);
+ylabel(<span class="string">'Amplitude'</span>);
+
+<span class="comment">% Step (f): Spectrograms Before and After Filtering</span>
+figure(9);
+subplot(2, 1, 1);
+spectrogram(ecgsig, 256, 250, 256, fs, <span class="string">'yaxis'</span>);
+title(<span class="string">'Spectrogram of Original ECG Signal'</span>);
+
+subplot(2, 1, 2);
+spectrogram(filtered_ecg, 256, 250, 256, fs, <span class="string">'yaxis'</span>);
+title(<span class="string">'Spectrogram of Filtered ECG Signal'</span>);
+</pre>
+<pre class="codeoutput">
+fint =
+
+   96.4000
+
+
+fs =
+
+   800
+
+Numerator Coefficients (b):
+    1.0000   -1.4536    1.0000
+
+Denominator Coefficients (a):
+    1.0000   -1.3809    0.9025
+
+</pre>
+<img vspace="5" hspace="5" src="Lab_Exercise_06.png" alt=""> <img vspace="5" hspace="5" src="Lab_Exercise_07.png" alt=""> <img vspace="5" hspace="5" src="Lab_Exercise_08.png" alt=""> <img vspace="5" hspace="5" src="Lab_Exercise_09.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2024b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% 2 Lab Exercise
+
+%% 2.1 IIR Allpass Filter
+% Parameters for IIR Allpass Filter
+r = 0.9; 
+theta = pi/3; % Angle in radians
+
+% Calculate poles and zeros
+zero1 = (1/r) * exp(1j * theta); % Zero location (conjugate pair)
+zero2 = (1/r) * exp(-1j * theta); % Zero location
+pole1 = r * exp(1j * theta); % Pole location (conjugate pair)
+pole2 = r * exp(-1j * theta); % Pole location
+
+% Numerator and denominator coefficients
+numerator = poly([zero1, zero2]); 
+denominator = poly([pole1, pole2]); 
+
+% Gain adjustment to ensure |H(e^jw)| = 10
+G = 10;
+
+% Frequency response of the filter
+[H, w] = freqz(G * numerator, denominator, 1024, 'whole');
+
+% Plot frequency response
+figure(1);
+plot(w/(2*pi), abs(H), 'LineWidth', 1.5);
+grid on;
+title('Frequency Response of IIR Allpass Filter');
+xlabel('Normalized Frequency (\times 2\pi)');
+ylabel('|H(e^{j\omega})|');
+
+% Plot pole-zero diagram
+figure(2);
+zplane(numerator, denominator);
+title('Pole-Zero Plot of IIR Allpass Filter');
+
+% Display the filter coefficients
+disp('Numerator coefficients:');
+disp(numerator);
+disp('Denominator coefficients:');
+disp(denominator);
+
+%% 2.2 IIR Notch Filters
+
+% Parameters for IIR Notch Filter
+fs = 1000; 
+fint = 60; 
+r = 0.95; 
+theta = 2 * pi * fint / fs; % Angle corresponding to interference frequency
+
+% Calculate poles and zeros
+zero1 = exp(1j * theta); % Zero location (complex conjugate pair)
+zero2 = exp(-1j * theta); % Zero location
+pole1 = r * exp(1j * theta); % Pole location (complex conjugate pair)
+pole2 = r * exp(-1j * theta); % Pole location
+
+% Numerator and denominator coefficients
+numerator = poly([zero1, zero2]); 
+denominator = poly([pole1, pole2]); 
+
+% Frequency response of the notch filter
+[H, w] = freqz(numerator, denominator, 1024, fs);
+
+% Plot frequency response
+figure(3);
+plot(w, abs(H), 'LineWidth', 1.5);
+grid on;
+title('Frequency Response of IIR Notch Filter');
+xlabel('Frequency (Hz)');
+ylabel('|H(f)|');
+xlim([0, fs/2]);
+
+% Plot pole-zero diagram
+figure(4);
+zplane(numerator, denominator);
+title('Pole-Zero Plot of IIR Notch Filter');
+
+% Apply the filter to a test signal 
+t = 0:1/fs:1; % Time vector
+clean_signal = sin(2 * pi * 5 * t); % 5 Hz sine wave
+interference = sin(2 * pi * fint * t); % 60 Hz interference
+signal_with_interference = clean_signal + interference;
+
+% Filter the signal
+filtered_signal = filter(numerator, denominator, signal_with_interference);
+
+% Plot time-domain signals
+figure(5);
+subplot(2, 1, 1);
+plot(t, signal_with_interference);
+title('Signal with Interference');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+
+subplot(2, 1, 2);
+plot(t, filtered_signal);
+title('Filtered Signal (Interference Removed)');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+
+% Display the filter coefficients
+disp('Numerator coefficients:');
+disp(numerator);
+disp('Denominator coefficients:');
+disp(denominator);
+
+
+
+%% 2.4 Notch Filter Removes Sinusoidal Interference
+% Step (a): Generate ECG Signal with Interference
+IDstring = 'u1499462'; 
+dur = 15; 
+[ecgsig, fs, fint] = ECGmake(IDstring, dur);
+
+% Plot the original signal with interference
+figure(6);
+plot((0:length(ecgsig)-1)/fs, ecgsig);
+title('ECG Signal with Interference');
+xlabel('Time (s)');
+ylabel('Amplitude');
+
+% Step (b): Design the IIR Notch Filter
+r = 0.95; % Pole radius
+theta = 2 * pi * fint / fs; % Angle of the pole and zero
+poles = r * [exp(1j*theta); exp(-1j*theta)]; % Poles as column vector
+zeros = [exp(1j*theta); exp(-1j*theta)]; % Zeros as column vector
+
+% Convert poles and zeros to filter coefficients
+[num, den] = zp2tf(zeros, poles, 1);
+
+% Step (c): Frequency Response of Notch Filter
+[H, f] = freqz(num, den, 1024, fs); % Frequency response
+figure(7);
+plot(f, abs(H));
+title('Frequency Response of the Notch Filter');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+
+% Step (d): Filter Coefficients
+disp('Numerator Coefficients (b):');
+disp(num);
+disp('Denominator Coefficients (a):');
+disp(den);
+
+% Step (e): Apply Notch Filter to ECG Signal
+filtered_ecg = filter(num, den, ecgsig);
+
+% Plot original and filtered signals 
+figure(8);
+subplot(2, 1, 1);
+plot((0:length(ecgsig)-1)/fs, ecgsig);
+title('Original ECG Signal');
+xlabel('Time (s)');
+ylabel('Amplitude');
+
+subplot(2, 1, 2);
+plot((0:length(filtered_ecg)-1)/fs, filtered_ecg);
+title('Filtered ECG Signal');
+xlabel('Time (s)');
+ylabel('Amplitude');
+
+% Step (f): Spectrograms Before and After Filtering
+figure(9);
+subplot(2, 1, 1);
+spectrogram(ecgsig, 256, 250, 256, fs, 'yaxis');
+title('Spectrogram of Original ECG Signal');
+
+subplot(2, 1, 2);
+spectrogram(filtered_ecg, 256, 250, 256, fs, 'yaxis');
+title('Spectrogram of Filtered ECG Signal');
+
+
+
+
+##### SOURCE END #####
+-->
+</body>
+</html>
