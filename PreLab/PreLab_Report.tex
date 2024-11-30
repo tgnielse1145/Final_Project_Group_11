@@ -1,0 +1,122 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{a4paper, margin=1in}
+
+\title{Analysis of IIR Filters: Pre-Lab Report}
+\author{}
+\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section*{Introduction}
+	Infinite Impulse Response (IIR) filters are widely used in signal processing for their ability to model systems with recursive behavior. Unlike Finite Impulse Response (FIR) filters, IIR filters have an infinite-length impulse response due to their feedback structure. This report explores the behavior of IIR filters, focusing on their design, stability, frequency response, and real-world applications using MATLAB's PeZ GUI. The experiments conducted aim to analyze the relationship between poles and zeros and their effects on the filter's time-domain and frequency-domain behavior.
+	
+	\section*{Objectives}
+	\begin{enumerate}
+		\item Understand the role of poles and zeros in determining the characteristics of IIR filters.
+		\item Analyze how pole locations affect filter stability, impulse response decay, and frequency response.
+		\item Explore specific IIR filter types such as first-order filters, bandpass filters, and all-pass filters.
+	\end{enumerate}
+	
+	\section*{Theory}
+	\subsection*{IIR Filters Overview}
+	IIR filters are characterized by the feedback in their structure:
+	\[
+	H(z) = \frac{B(z)}{A(z)} = \frac{\sum_{k=0}^{M} b_k z^{-k}}{1 - \sum_{l=1}^{N} a_l z^{-l}},
+	\]
+	where $B(z)$ and $A(z)$ are polynomials defining the numerator (zeros) and denominator (poles), respectively. Key concepts:
+	\begin{itemize}
+		\item \textbf{Poles:} Affect stability and frequency response peaks.
+		\item \textbf{Zeros:} Nullify specific frequencies.
+		\item \textbf{Stability:} Requires all poles to lie inside the unit circle in the $z$-domain.
+	\end{itemize}
+	
+	\subsection*{Types of IIR Filters}
+	\begin{itemize}
+		\item \textbf{Low-pass:} Attenuates high frequencies while passing low frequencies.
+		\item \textbf{Bandpass:} Allows frequencies in a certain range while attenuating others.
+		\item \textbf{Notch:} Removes narrowband interference by nullifying specific frequencies.
+		\item \textbf{All-pass:} Maintains a flat magnitude response but alters the phase.
+	\end{itemize}
+	
+	\section*{Methodology}
+	\subsection*{Tools Used}
+	\begin{itemize}
+		\item MATLAB’s \texttt{PeZ GUI} for interactive visualization of pole-zero placement and frequency responses.
+		\item MATLAB functions \texttt{freqz}, \texttt{filter}, and \texttt{roots} for numerical analysis and plotting.
+	\end{itemize}
+	
+	\subsection*{Experiments}
+	\begin{enumerate}
+		\item \textbf{Single Real Pole Analysis:}
+		\begin{itemize}
+			\item Place a pole at $z = -0.5$ and observe its effects on impulse and frequency responses.
+			\item Move the pole closer to and farther from the unit circle to study stability and decay rates.
+		\end{itemize}
+		\item \textbf{First-Order IIR Filter:}
+		\begin{itemize}
+			\item Design $H(z) = \frac{1 - z^{-1}}{1 + 0.9z^{-1}}$ and analyze its low-pass characteristics.
+		\end{itemize}
+		\item \textbf{Second-Order Bandpass Filter:}
+		\begin{itemize}
+			\item Implement $H(z) = \frac{1 - z^{-2}}{1 + 0.8z^{-1} + 0.64z^{-2}}$ and explore the effects of conjugate poles and zeros.
+		\end{itemize}
+		\item \textbf{All-Pass Filter:}
+		\begin{itemize}
+			\item Design a filter with conjugate poles and zeros and verify its flat magnitude response and phase distortion.
+		\end{itemize}
+	\end{enumerate}
+	
+	\section*{Results}
+	\subsection*{Single Real Pole Analysis}
+	\begin{itemize}
+		\item Placing a pole at $z = -0.5$ results in an exponentially decaying impulse response, confirming stability.
+		\item Moving the pole closer to the unit circle slows the decay, creating sharper frequency response peaks.
+		\item Poles outside the unit circle cause instability, with the impulse response growing unbounded.
+	\end{itemize}
+	
+	\subsection*{First-Order IIR Filter}
+	\begin{itemize}
+		\item Low-pass characteristics observed in the frequency response, with attenuation of high frequencies.
+		\item Impulse response shows slower decay as the pole moves closer to $z = 1$.
+	\end{itemize}
+	
+	\subsection*{Second-Order Bandpass Filter}
+	\begin{itemize}
+		\item Poles at $0.8e^{j\pi/4}$ and $0.8e^{-j\pi/4}$, along with zeros at $e^{j\pi/2}$ and $e^{-j\pi/2}$, create a bandpass response.
+		\item Frequency response peaks at $\pi/4$, with attenuation outside this range.
+	\end{itemize}
+	
+	\subsection*{All-Pass Filter}
+	\begin{itemize}
+		\item Flat magnitude response observed across all frequencies, with nonlinear phase distortion.
+	\end{itemize}
+	
+	\section*{Discussion}
+	\subsection*{Pole-Zero Placement}
+	\begin{itemize}
+		\item \textbf{Poles near the unit circle:} Create sharper frequency responses but risk instability if moved outside.
+		\item \textbf{Zeros on the unit circle:} Nullify specific frequencies, useful for notch filters.
+	\end{itemize}
+	
+	\subsection*{Stability}
+	Stability is critical for practical filters and is ensured by keeping all poles inside the unit circle. This requirement was demonstrated through pole movement experiments.
+	
+	\subsection*{Applications}
+	\begin{itemize}
+		\item \textbf{Low-Pass Filters:} Noise reduction in signals.
+		\item \textbf{Bandpass Filters:} Frequency isolation in communications.
+		\item \textbf{Notch Filters:} Removing 50/60 Hz powerline interference.
+		\item \textbf{All-Pass Filters:} Phase equalization in audio systems.
+	\end{itemize}
+	
+	\section*{Conclusion}
+	This pre-lab demonstrated the fundamental principles of IIR filters, focusing on the relationship between pole-zero placement and filter behavior. The experiments highlighted the importance of stability, the role of poles in shaping frequency response, and the versatility of IIR filters for different signal processing tasks.
+	
+\end{document}
