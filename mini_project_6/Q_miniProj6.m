@@ -1,7 +1,5 @@
 % Read the audio file
-%[audioData, fs] = audioread('AuntRhody.wav');
-[audioData, fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/AuntRhody.wav');
-
+[audioData, fs] = audioread('AuntRhody.wav');
 
 % Set the segment duration (in milliseconds) and calculate samples per segment
 segmentDurationMs = 100;  % Duration of each segment in milliseconds
@@ -69,7 +67,7 @@ end
 % Normalize the output signal to prevent clipping
 outputSignal = outputSignal / max(abs(outputSignal));
 % Save the new audio file
-outputFolder = '/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/';
+outputFolder = 'audio/';
 if ~exist(outputFolder, 'dir')
     mkdir(outputFolder);
 end
@@ -78,18 +76,17 @@ end
 outputFilename = fullfile(outputFolder, 'Detected_Notes.wav');
 audiowrite(outputFilename, outputSignal, fs);
 
-%disp(['Synthesized audio file saved as: ', outputFilename]);
+disp(['Synthesized audio file saved as: ', outputFilename]);
 
 % Read the newly created .wav file
-%[newAudioData, newFs] = audioread(outputFileName);
-[newAudioData, newFs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes.wav');
+[newAudioData, newFs] = audioread(outputFileName);
 
 
 % Double the tempo by halving the duration (speed up playback)
 doubledTempoData = newAudioData(1:2:end);  % Keep every second sample
 
 % Save the new audio file
-outputFolder = '/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/';
+outputFolder = 'audio/';
 if ~exist(outputFolder, 'dir')
     mkdir(outputFolder);
 end
@@ -101,19 +98,10 @@ audiowrite(tempoAdjustedFileName, doubledTempoData, fs);
 
 %disp(['Tempo-adjusted audio file saved as: ', tempoAdjustedFileName]);
 
+% Load the 'Detected_Notes_DoubleTempo.wav' file
+[inputAudio, wav_fs] = audioread('Detected_Notes_DoubleTempo.wav');
 
-
-
-
-
-
-
-% Load the 'DetectedNotes_DoubleTempo.wav' file
-[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes_DoubleTempo.wav');
-
-%disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
-
-
+disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
 
 % Define cosine signal parameters
 f = 30;  % Frequency of the cosine wave (Hz)
@@ -236,9 +224,9 @@ set(gca, 'fontweight', 'bold');          % Set font weight
 sgtitle('Cosine Signal Sampling at Different Frequencies');
 
 
-[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes_DoubleTempo.wav');
+[inputAudio, wav_fs] = audioread('Detected_Notes_DoubleTempo.wav');
 
-%disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
+disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
 
 % Define cosine signal parameters
 f = 30;  % Frequency of the cosine wave (Hz)
@@ -313,8 +301,8 @@ sgtitle('Cosine Signal Sampling at Different Frequencies');
 
 
 % Load the input audio file
-[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes_DoubleTempo.wav');
-%disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
+[inputAudio, wav_fs] = audioread('Detected_Notes_DoubleTempo.wav');
+disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
 
 % Extract the x component of the input audio
 if size(inputAudio, 2) > 1
@@ -351,11 +339,6 @@ set(gca, 'fontname', 'Times New Roman');  % Set font name
 set(gca, 'fontsize', 14);                % Set font size
 set(gca, 'fontweight', 'bold');          % Set font weight
 hold off;
-
-
-
-
-
 
 function [noteNum, maxVal] = noteDetect(segment, fs, threshold)
     % noteDetect: Identifies the dominant note in a given audio segment.
