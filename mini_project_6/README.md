@@ -7,8 +7,6 @@
 ![Graph3](../assets/figures/mini_project_6_fig_3.png "Graph3")
 ### Graph 4
 ![Graph4](../assets/figures/mini_project_6_fig_4.png "Graph4")
-## Download the Orginal Audio
-Click [here](assets/audio/AuntRhody.wav) to download the audio file.
 
 ## Download the Original Audio
 Click [here](../assets/audio/AuntRhody.wav) to download the audio file.
