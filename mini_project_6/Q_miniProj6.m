@@ -1,9 +1,7 @@
 % Read the audio file
 %[audioData, fs] = audioread('AuntRhody.wav');
-[audioData, fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/AuntRhody.wav');
+[audioData, fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/AuntRhody.wav');
 
-% Read the audio file
-%[audioData, fs] = audioread('AuntRhody.wav');
 
 % Set the segment duration (in milliseconds) and calculate samples per segment
 segmentDurationMs = 100;  % Duration of each segment in milliseconds
@@ -71,34 +69,34 @@ end
 % Normalize the output signal to prevent clipping
 outputSignal = outputSignal / max(abs(outputSignal));
 % Save the new audio file
-outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
+outputFolder = '/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/';
 if ~exist(outputFolder, 'dir')
     mkdir(outputFolder);
 end
 
 % Combine the folder path and file name
-outputFilename = fullfile(outputFolder, 'DetectedNotes.wav');
+outputFilename = fullfile(outputFolder, 'Detected_Notes.wav');
 audiowrite(outputFilename, outputSignal, fs);
 
 %disp(['Synthesized audio file saved as: ', outputFilename]);
 
 % Read the newly created .wav file
 %[newAudioData, newFs] = audioread(outputFileName);
-[newAudioData, newFs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes.wav');
+[newAudioData, newFs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes.wav');
 
 
 % Double the tempo by halving the duration (speed up playback)
 doubledTempoData = newAudioData(1:2:end);  % Keep every second sample
 
 % Save the new audio file
-outputFolder = '/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/';
+outputFolder = '/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/';
 if ~exist(outputFolder, 'dir')
     mkdir(outputFolder);
 end
 
 % Save the tempo-adjusted audio file
-tempoAdjustedFileName = fullfile(outputFolder,'DetectedNotes_DoubleTempo.wav');
-%tempoAdjustedFileName = 'DetectedNotes_DoubleTempo.wav';
+tempoAdjustedFileName = fullfile(outputFolder,'Detected_Notes_DoubleTempo.wav');
+
 audiowrite(tempoAdjustedFileName, doubledTempoData, fs);
 
 %disp(['Tempo-adjusted audio file saved as: ', tempoAdjustedFileName]);
@@ -111,8 +109,7 @@ audiowrite(tempoAdjustedFileName, doubledTempoData, fs);
 
 
 % Load the 'DetectedNotes_DoubleTempo.wav' file
-%[inputAudio, fs] = audioread('DetectedNotes_DoubleTempo.wav');
-[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes_DoubleTempo.wav');
+[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes_DoubleTempo.wav');
 
 %disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
 
@@ -239,7 +236,7 @@ set(gca, 'fontweight', 'bold');          % Set font weight
 sgtitle('Cosine Signal Sampling at Different Frequencies');
 
 
-[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes_DoubleTempo.wav');
+[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes_DoubleTempo.wav');
 
 %disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
 
@@ -316,7 +313,7 @@ sgtitle('Cosine Signal Sampling at Different Frequencies');
 
 
 % Load the input audio file
-[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/School/Semesters/Fall/Fall_2024/ECE_6530/Final_Project/Final_Project_Group_11/assets/audio/DetectedNotes_DoubleTempo.wav');
+[inputAudio, wav_fs] = audioread('/Users/toddnielsen/Desktop/FinalProject/Final_Project_Group_11/assets/audio/Detected_Notes_DoubleTempo.wav');
 %disp(['Sampling rate of input file: ', num2str(wav_fs), ' Hz']);
 
 % Extract the x component of the input audio
