@@ -1,5 +1,5 @@
 % Read the audio file
-%[audioData, fs] = audioread('AuntRhody.wav');% Replace with your file's path
+[audioData, fs] = audioread('AuntRhody.wav');% Replace with your file's path
 
 % Set the segment duration (in milliseconds) and calculate samples per segment
 segmentDurationMs = 100;  % Duration of each segment in milliseconds
