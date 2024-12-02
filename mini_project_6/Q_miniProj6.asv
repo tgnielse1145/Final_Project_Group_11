@@ -1,5 +1,8 @@
 % Read the audio file
-%[audioData, fs] = audioread('AuntRhody.wav');% Replace with your file's path
+%[audioData, fs] = audioread('AuntRhody.wav');
+[audioData, fs] = audioread('/Users/toddnielsen/Desktop/Final_proj2/Final_Project_Group_11/assets/audio/AuntRhody.wav');
+% Read the audio file
+%[audioData, fs] = audioread('AuntRhody.wav');
 
 % Set the segment duration (in milliseconds) and calculate samples per segment
 segmentDurationMs = 100;  % Duration of each segment in milliseconds
@@ -67,37 +70,40 @@ end
 % Normalize the output signal to prevent clipping
 outputSignal = outputSignal / max(abs(outputSignal));
 % Save the new audio file
-outputFolder = 'audio/';
+outputFolder = '/Users/toddnielsen/Desktop/Final_proj2/Final_Project_Group_11/assets/audio/';
 if ~exist(outputFolder, 'dir')
     mkdir(outputFolder);
 end
 
 % Combine the folder path and file name
 outputFilename = fullfile(outputFolder, 'Detected_Notes.wav');
-audiowrite(outputFilename, outputSignal, fs); % Replace with your file's path
+audiowrite(outputFilename, outputSignal, fs);
 
-disp(['Synthesized audio file saved as: ', outputFilename]);
+%disp(['Synthesized audio file saved as: ', outputFilename]);
 
 % Read the newly created .wav file
-[newAudioData, newFs] = audioread(outputFileName); % Replace with your file's path
+%[newAudioData, newFs] = audioread(outputFileName);
+[newAudioData, newFs] = audioread('/Users/toddnielsen/Desktop/Final_proj2/Final_Project_Group_11/assets/audio/');
+
 
 % Double the tempo by halving the duration (speed up playback)
 doubledTempoData = newAudioData(1:2:end);  % Keep every second sample
 
 % Save the new audio file
-outputFolder = 'audio/';
+outputFolder = '/Users/toddnielsen/Desktop/Final_proj2/Final_Project_Group_11/assets/audio/';
 if ~exist(outputFolder, 'dir')
     mkdir(outputFolder);
 end
 
 % Save the tempo-adjusted audio file
 tempoAdjustedFileName = fullfile(outputFolder,'Detected_Notes_DoubleTempo.wav');
-audiowrite(tempoAdjustedFileName, doubledTempoData, fs);% Replace with your file's path
+%tempoAdjustedFileName = 'DetectedNotes_DoubleTempo.wav';
+audiowrite(tempoAdjustedFileName, doubledTempoData, fs);
 
-disp(['Tempo-adjusted audio file saved as: ', tempoAdjustedFileName]);
+%disp(['Tempo-adjusted audio file saved as: ', tempoAdjustedFileName]);
 
 % Step 1: Load the .wav file
-[data, fs] = audioread('Detected_Notes_DoubleTempo.wav'); % Replace with your file's path
+[data, fs] = audioread('/Users/toddnielsen/Desktop/Final_proj2/Final_Project_Group_11/assets/audio/AuntRhody'); % Replace with your file's path
 
 % Step 2: Extract one channel of the audio data (if stereo)
 if size(data, 2) > 1
