@@ -9,8 +9,8 @@
 ## Download the Original Audio
 Click [here](../assets/audio/AuntRhody.wav) to download the audio file.
 
-## Download the New Audio
+## Download the Detected Notes Audio
 Click [here](../assets/audio/Detected_Notes.wav) to download the audio file.
 
-## Download the New Audio
+## Download the Detected Noted Double Tempo Audio
 Click [here](../assets/audio/Detected_Notes_DoubleTempo.wav) to download the audio file.
