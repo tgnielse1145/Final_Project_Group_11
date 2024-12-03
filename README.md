@@ -1,7 +1,7 @@
 # Final Project Group 11
 
 ## IIR Filters
-
+This section has no code but instead has a write-up for the PreLab.
 ## S-9: Interference Removal from Electro-Cardiogram (ECG) Signals
 
 ## Mini Project 05
